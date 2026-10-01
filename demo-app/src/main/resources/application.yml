@@ -1,0 +1,15 @@
+server:
+  port: 8080
+
+app:
+  security:
+    multi-tenant:
+      tenants:
+        - issuer-uri: http://localhost:8080/mock-idp/tenant-a
+          audience: demo-api
+          jwks-uri: http://localhost:8080/mock-idp/tenant-a/jwks
+          roles-claim-path: roles
+        - issuer-uri: http://localhost:8080/mock-idp/tenant-b
+          audience: demo-api-b
+          jwks-uri: http://localhost:8080/mock-idp/tenant-b/jwks
+          roles-claim-path: realm_access.roles

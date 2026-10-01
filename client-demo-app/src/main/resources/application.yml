@@ -1,0 +1,31 @@
+server:
+  port: 8082
+
+app:
+  downstream:
+    base-url: http://localhost:8080
+  security:
+    multi-tenant:
+      tenants:
+        - issuer-uri: http://localhost:8080/mock-idp/tenant-a
+          audience: demo-api
+          jwks-uri: http://localhost:8080/mock-idp/tenant-a/jwks
+          roles-claim-path: roles
+        - issuer-uri: http://localhost:8080/mock-idp/tenant-b
+          audience: demo-api-b
+          jwks-uri: http://localhost:8080/mock-idp/tenant-b/jwks
+          roles-claim-path: realm_access.roles
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          internal-service:
+            client-id: internal-service
+            client-secret: internal-secret
+            authorization-grant-type: client_credentials
+            provider: tenant-a-mock-idp
+        provider:
+          tenant-a-mock-idp:
+            token-uri: http://localhost:8080/mock-idp/tenant-a/token

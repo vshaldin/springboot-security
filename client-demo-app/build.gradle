@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version "${springBootVersion}"
+    id 'io.spring.dependency-management' version "${springDependencyManagementVersion}"
+}
+
+dependencies {
+    implementation project(':multi-tenant-oauth2-spring-boot-starter')
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-restclient'
+
+    testImplementation project(':demo-app')
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-restclient'
+    testImplementation 'org.springframework.boot:spring-boot-resttestclient'
+    testImplementation 'org.springframework.security:spring-security-test'
+}
+
+tasks.named('test') {
+    // This module's ClientDemoIT also boots a real demo-app instance on port 8080 to call it
+    // over HTTP, same as demo-app's own HelloControllerIT does for itself - Gradle may otherwise
+    // schedule these two Test tasks on different worker threads at the same time, and both would
+    // try to bind 8080.
+    mustRunAfter(':demo-app:test')
+}
