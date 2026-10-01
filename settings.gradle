@@ -1,0 +1,13 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'multi-tenant-oauth2'
+
+include 'multi-tenant-oauth2-autoconfigure'
+include 'multi-tenant-oauth2-spring-boot-starter'
+include 'demo-app'
+include 'client-demo-app'
