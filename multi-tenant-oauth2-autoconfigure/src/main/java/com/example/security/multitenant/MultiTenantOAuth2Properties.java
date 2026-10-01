@@ -19,5 +19,16 @@ public record MultiTenantOAuth2Properties(List<Tenant> tenants) {
      *                       Spring's standard {@code scope}/{@code scp} handling when absent
      */
     public record Tenant(String issuerUri, String audience, String jwksUri, String rolesClaimPath) {
+
+        public Tenant {
+            if (issuerUri == null || issuerUri.isBlank()) {
+                throw new IllegalArgumentException(
+                        "Tenant 'issuer-uri' must not be blank (app.security.multi-tenant.tenants)");
+            }
+            if (audience == null || audience.isBlank()) {
+                throw new IllegalArgumentException(
+                        "Tenant 'audience' must not be blank for issuer '" + issuerUri + "'");
+            }
+        }
     }
 }

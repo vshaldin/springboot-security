@@ -11,7 +11,6 @@ import org.springframework.security.authentication.AuthenticationManagerResolver
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -48,7 +47,11 @@ public class MultiTenantOAuth2AutoConfiguration {
         Map<String, AuthenticationManager> managersByIssuer = properties.tenants().stream()
                 .collect(Collectors.toMap(
                         MultiTenantOAuth2Properties.Tenant::issuerUri,
-                        this::buildAuthenticationManager
+                        this::buildAuthenticationManager,
+                        (first, second) -> {
+                            throw new IllegalStateException(
+                                    "Duplicate tenant issuer-uri in 'app.security.multi-tenant.tenants'");
+                        }
                 ));
 
         return new JwtIssuerAuthenticationManagerResolver(managersByIssuer::get);
@@ -75,7 +78,7 @@ public class MultiTenantOAuth2AutoConfiguration {
                     new JwtIssuerValidator(tenant.issuerUri())
             );
         } else {
-            decoder = (NimbusJwtDecoder) JwtDecoders.fromIssuerLocation(tenant.issuerUri());
+            decoder = NimbusJwtDecoder.withIssuerLocation(tenant.issuerUri()).build();
             issuerAndTimestamp = JwtValidators.createDefaultWithIssuer(tenant.issuerUri());
         }
 

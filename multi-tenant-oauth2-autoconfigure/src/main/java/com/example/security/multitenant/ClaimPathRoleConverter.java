@@ -9,12 +9,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Resolves roles from a dot-separated claim path, e.g. {@code realm_access.roles} or
  * {@code resource_access.my-client.roles} - Keycloak realms are free to nest roles differently
  * per client, so the path is per-tenant configuration rather than a fixed convention.
+ * Each role is upper-cased and prefixed with {@code ROLE_}.
  */
 public class ClaimPathRoleConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
 
@@ -39,6 +39,6 @@ public class ClaimPathRoleConverter implements Converter<Jwt, Collection<Granted
         return roles.stream()
                 .map(String::valueOf)
                 .<GrantedAuthority>map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase(Locale.ROOT)))
-                .collect(Collectors.toList());
+                .toList();
     }
 }
